@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
+import { Dish } from '../../shared/dish'; 
+import { Observable } from 'rxjs/Observable';
+import { DishProvider } from '../dish/dish';
 import 'rxjs/add/operator/map';
 
 /*
@@ -13,20 +16,23 @@ export class FavoriteProvider {
 
   favorites: Array<any>;
 
-  constructor(public http: Http) {
+  constructor(public http: Http,
+     private dishService: DishProvider) {
     console.log('Hello FavoriteProvider Provider');
     this.favorites = [];
   }
 
   addFavorite(id: number): boolean {
-    this.favorites.push(id);
+    if (!this.isFavorite(id)) {
+       this.favorites.push(id);
+    }
     return true;
   }
 
   removeFavorite(id: number): boolean {
-    var index: number = this.favorites.indexOf(id, 0);
-    if (index > -1) {
-      this.favorites.splice(id, 1);
+    var index: number = this.favorites.indexOf(id);
+    if (index >= 0) {
+      this.favorites.splice(index, 1);
       return true;
     }
     
@@ -37,4 +43,19 @@ export class FavoriteProvider {
     return this.favorites.some(el => el === id);
   }
 
+  getFavorites(): Observable<Dish[]> {
+     return this.dishService.getDishes()
+       .map(dishes => dishes.filter(dish => this.favorites.some(el => el === dish.id)));
+  }
+
+  deleteFavorite(id: number): Observable<Dish[]> {
+    var isDeleted: boolean = this.removeFavorite(id);
+    if (isDeleted) {
+       return this.getFavorites();
+    }
+    else {
+      console.log('Deleting non-existent favorite', id);
+      return Observable.throw('Deleting non-existent favorite' + id);
+    }
+  }
 }
