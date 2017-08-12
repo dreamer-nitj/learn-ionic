@@ -39,10 +39,7 @@ export class DishdetailPage {
     console.log('ionViewDidLoad DishdetailPage');
   }
 
-  addToFavorites() {
-    console.log('Adding to Favorites', this.dish.id);
-    this.favorite = this.favoriteService.addFavorite(this.dish.id);
-  }
+   
 
   removeFromFavorites() {
     console.log('Removing from Favorites', this.dish.id);
