@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Dish } from '../../shared/dish';
 import { Comment } from '../../shared/comment';
 import { FavoriteProvider } from '../../providers/favorite/favorite';
+import { CommentPage } from '../../pages/comment/comment';
 
 /**
  * Generated class for the DishdetailPage page.
@@ -27,6 +28,8 @@ export class DishdetailPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
      @Inject('BaseURL') private BaseURL,
      private favoriteService: FavoriteProvider,
+     private actionsheetController: ActionSheetController,
+     private modalController: ModalController,
      private toastController: ToastController) {
        this.dish = navParams.get('dish');
        this.favorite = this.favoriteService.isFavorite(this.dish.id);
@@ -53,5 +56,49 @@ export class DishdetailPage {
       position: 'middle',
       duration: 3000
     }).present();
+  }
+
+  showActionSheet() {
+    let actionSheet = this.actionsheetController.create({
+      title: 'Select Actions',
+      buttons: [
+        {
+          text: 'Add to Favorites',
+          handler: () => {
+            this.addToFavorites();
+          }
+        },
+        {
+          text: 'Add Comment',
+          handler: () => {
+            this.openComment();
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+
+    actionSheet.present();
+  }
+
+  openComment() {
+    let modal = this.modalController.create(CommentPage);
+    modal.onDidDismiss(data => {
+      console.log('data received: ', data);
+      let newComment = {
+        rating: data.rating,
+        comment: data.comment,
+        author: data.name,
+        date: new Date().toString()
+      };
+      this.dish.comments.push(newComment);
+    });
+    modal.present();
   }
 }
