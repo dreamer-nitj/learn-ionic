@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import { Dish } from '../../shared/dish'; 
 import { Observable } from 'rxjs/Observable';
 import { DishProvider } from '../dish/dish';
+import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/map';
 
 /*
@@ -17,14 +18,30 @@ export class FavoriteProvider {
   favorites: Array<any>;
 
   constructor(public http: Http,
-     private dishService: DishProvider) {
+     private dishService: DishProvider,
+     private storage: Storage) {
     console.log('Hello FavoriteProvider Provider');
+
     this.favorites = [];
+    
+    storage.get('favorites').then(favorites => {
+      if (favorites) {
+        this.favorites = favorites;
+      } else {
+        console.log('favorites not defined');
+      }
+    });
   }
 
   addFavorite(id: number): boolean {
     if (!this.isFavorite(id)) {
        this.favorites.push(id);
+    }
+
+    if (this.favorites.length > 0) {
+      this.storage.set('favorites', this.favorites);
+    } else {
+      this.storage.remove('favorites');
     }
     return true;
   }
