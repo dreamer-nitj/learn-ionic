@@ -67,7 +67,8 @@
             "de.appplant.cordova.plugin.local-notification": {},
             "cordova-plugin-email": {},
             "cordova-plugin-x-socialsharing": {},
-            "cordova-plugin-camera": {}
+            "cordova-plugin-camera": {},
+            "cordova-plugin-x-socialsharing": {}
         },
         "platforms": [
             "android"
